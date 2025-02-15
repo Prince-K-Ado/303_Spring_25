@@ -1,7 +1,8 @@
 import datetime
+import string
 def encode(input_text, shift):
     # Create a list of all lowercase letters (the first item in the returned tuple)
-    alphabet = [chr(i) for i in range(ord('a'), ord('z') + 1)]
+    alphabet = list(string.ascii_lowercase)
     
     encoded_chars = []
     
@@ -65,7 +66,7 @@ class BankAccount:
         if creation_date is None:
             creation_date = datetime.date.today()
 
-        # Verify that creation_date is not in the future
+        # Validate the creation date is not in the future
         if creation_date > datetime.date.today():
             raise Exception("Account creation date cannot be in the future.")
 
@@ -75,16 +76,42 @@ class BankAccount:
         self.balance = balance
 
     def deposit(self, amount):
-        # Negative deposit amounts are not allowed
         if amount < 0:
-            raise Exception("Deposit amount cannot be negative.")
-        
-        self.balance += amount
-        print(f"Deposit successful. New balance: {self.balance}")
+            print(f"Negative deposits are not allowed({amount}). Current balance: {self.balance}")
+        else:
+            self.balance += amount
+            print(f"Deposit successful. New balance: {self.balance}")
 
     def withdraw(self, amount):
+        # Base BankAccount has no specific restrictions aside from showing new balance
         self.balance -= amount
         print(f"Withdrawal successful. New balance: {self.balance}")
 
     def view_balance(self):
         return self.balance
+
+
+class SavingsAccount(BankAccount):
+    def withdraw(self, amount):
+        # 1) Check account age (must be at least 180 days old)
+        age_in_days = (datetime.date.today() - self.creation_date).days
+        if age_in_days < 180:
+            print("Cannot withdraw until the account has been active for at least 180 days.")
+            return
+
+        # 2) Check overdraft (no negative balances allowed)
+        if amount > self.balance:
+            print("Insufficient funds. Overdrafts are not permitted.")
+            return
+
+        # If checks pass, proceed with withdrawal
+        super().withdraw(amount)
+
+class CheckingAccount(BankAccount):
+    def withdraw(self, amount):
+        # Use the base withdraw logic
+        super().withdraw(amount)
+        # If balance goes negative, apply a $30 overdraft fee
+        if self.balance < 0:
+            self.balance -= 30
+            print(f"Overdraft fee incurred. New balance: {self.balance}")
