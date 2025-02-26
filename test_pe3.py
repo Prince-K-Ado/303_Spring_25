@@ -1,7 +1,6 @@
 # this file contains tests for a file named "pe3.py" that must be located in the same dir as this test file
 # run in terminal: pytest -v test_pe3.py
 # 25 tests should pass, 2 should fail with "XFAIL"
-
 import pytest, datetime
 from pe3 import *
 
