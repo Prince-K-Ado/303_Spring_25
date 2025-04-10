@@ -1,3 +1,4 @@
+
 import datetime
 import string
 def encode(input_text, shift):
